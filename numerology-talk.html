@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Numerology Talk — Name Number Calculator</title>
+  <meta name="description" content="Calculate your name's numerology (Pythagorean or Chaldean). See letter values, totals and single-digit reduction (with master numbers 11/22/33 preserved)." />
+  <style>
+    :root{
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted:#64748b;
+      --primary:#4f46e5;
+      --ring:#a5b4fc;
+      --border:#e5e7eb;
+      --chip:#f1f5f9;
+      --success:#10b981;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
+    .container{max-width:960px;margin:0 auto;padding:24px}
+    h1{font-size:clamp(24px, 3vw, 36px);margin:0;font-weight:800;letter-spacing:-0.02em}
+    p.lead{color:var(--muted);margin:8px 0 0}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:24px}
+    @media (min-width:820px){ .grid{grid-template-columns:1fr auto} }
+    label{font-size:14px;font-weight:600;margin-bottom:6px;display:block}
+    input,select,button{border:1px solid var(--border);border-radius:16px;padding:12px 14px;font-size:16px;background:#fff;outline:none}
+    input:focus,select:focus{box-shadow:0 0 0 3px var(--ring);border-color:var(--primary)}
+    button.copy{font-size:12px;padding:8px 12px;border-radius:999px;background:var(--card)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .pills{display:flex;flex-wrap:wrap;gap:8px}
+    .pill{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:var(--chip);font-size:12px;font-weight:600}
+    .letters{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{border:1px solid var(--border);border-radius:12px;padding:8px 10px;background:#f8fafc}
+    .muted{color:var(--muted);font-size:14px}
+    table{width:100%;border-collapse:separate;border-spacing:6px}
+    td{border:1px solid var(--border);border-radius:8px;text-align:center;padding:8px}
+    .small{font-size:12px}
+    .footer{margin-top:40px;text-align:center;color:var(--muted);font-size:12px}
+    .final{color:var(--success);font-weight:800}
+    .titlebar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe;font-size:12px}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;background:#111827;color:#f9fafb;border-radius:6px;padding:2px 6px;font-size:12px}
+    .meaning ul{margin:8px 0 0;padding-left:18px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔢 Numerology Talk</h1>
+    <p class="lead">नाम (spelling) के आधार पर <b>toṭak अंक</b> निकालें. Default: <b>Pythagorean</b>. (Chaldean भी चुन सकते हैं)</p>
+
+    <div class="grid">
+      <div>
+        <label for="name">नाम / Name</label>
+        <input id="name" placeholder="जैसे: Heena, Hari, Solvix" value="Heena" />
+      </div>
+      <div>
+        <label for="method">Method</label>
+        <select id="method">
+          <option value="pythagorean">Pythagorean</option>
+          <option value="chaldean">Chaldean (popular in India)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="card" style="margin-top:20px">
+      <div class="pills">
+        <span class="pill">Cleaned: <span id="cleaned" style="margin-left:6px;font-weight:800">—</span></span>
+        <span class="pill">Total: <span id="total" style="margin-left:6px;font-weight:800">0</span></span>
+        <span class="pill">Final: <span id="final" class="final" style="margin-left:6px">0</span></span>
+      </div>
+
+      <div id="letters" class="letters"></div>
+
+      <div id="reduction" class="muted" style="margin-top:10px;display:none"></div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="titlebar">
+        <h2 style="margin:0;font-size:18px">Alphabet Values <span id="mapTitle" class="badge">Pythagorean</span></h2>
+        <button class="copy" id="copyMap">Copy mapping JSON</button>
+      </div>
+      <div style="overflow:auto;margin-top:12px">
+        <table>
+          <tbody id="mapTable"></tbody>
+        </table>
+      </div>
+      <p class="small muted">Note: केवल English letters को गिना जाता है (spaces, hyphens, emojis इत्यादि ignore होते हैं). Master numbers 11/22/33 preserve रहते हैं.</p>
+    </div>
+
+    <div class="card meaning" style="margin-top:20px">
+      <h3 style="margin:0 0 8px 0;font-size:16px">Meaning (quick gist)</h3>
+      <ul class="small">
+        <li><b>1</b>: शुरुआत, नेतृत्व, independence</li>
+        <li><b>2</b>: सहयोग, sensitivity, diplomacy</li>
+        <li><b>3</b>: रचनात्मकता, expression, joy</li>
+        <li><b>4</b>: स्थिरता, व्यवस्थित, मेहनत</li>
+        <li><b>5</b>: बदलाव, freedom, adventure</li>
+        <li><b>6</b>: देखभाल, harmony, family</li>
+        <li><b>7</b>: आध्यात्म, analysis, wisdom</li>
+        <li><b>8</b>: शक्ति, material success, authority</li>
+        <li><b>9</b>: करुणा, service, completion</li>
+        <li><b>11/22/33</b>: master vibrations—intuition, building, compassion</li>
+      </ul>
+    </div>
+
+    <div class="footer">© Numerology Talk — Single‑file website. Host anywhere (Netlify Drop / GitHub Pages).</div>
+  </div>
+
+<script>
+  const PYTHAGOREAN_MAP = {
+    A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,
+    J:1,K:2,L:3,M:4,N:5,O:6,P:7,Q:8,R:9,
+    S:1,T:2,U:3,V:4,W:5,X:6,Y:7,Z:8
+  };
+  const CHALDEAN_MAP = {
+    A:1,B:2,C:3,D:4,E:5,F:8,G:3,H:5,I:1,
+    J:1,K:2,L:3,M:4,N:5,O:7,P:8,Q:1,R:2,
+    S:3,T:4,U:6,V:6,W:6,X:5,Y:1,Z:7
+  };
+
+  const nameInput = document.getElementById('name');
+  const methodSel = document.getElementById('method');
+  const cleanedEl = document.getElementById('cleaned');
+  const totalEl = document.getElementById('total');
+  const finalEl = document.getElementById('final');
+  const lettersWrap = document.getElementById('letters');
+  const reductionEl = document.getElementById('reduction');
+  const mapTitle = document.getElementById('mapTitle');
+  const mapTable = document.getElementById('mapTable');
+  const copyMapBtn = document.getElementById('copyMap');
+
+  function cleanName(raw){
+    let s = raw.normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').toUpperCase();
+    s = s.replace(/[^A-Z]/g,''); // keep only A-Z
+    return s;
+  }
+  function sumDigits(n){ return n.toString().split('').map(Number).reduce((a,b)=>a+b,0); }
+  function reduceToSingle(n){
+    const steps=[n];
+    let x=n;
+    while(x>9 && x!==11 && x!==22 && x!==33){
+      x = sumDigits(x);
+      steps.push(x);
+    }
+    return {final:x, steps};
+  }
+  function compute(name, map){
+    const cleaned = cleanName(name);
+    const letters = cleaned.split('');
+    const values = letters.map(ch => map[ch] || 0);
+    const total = values.reduce((a,b)=>a+b,0);
+    const {final, steps} = reduceToSingle(total);
+    return {cleaned, letters, values, total, final, steps};
+  }
+
+  function buildMapTable(map){
+    const groups = [
+      ['A','B','C','D','E','F','G','H','I'],
+      ['J','K','L','M','N','O','P','Q','R'],
+      ['S','T','U','V','W','X','Y','Z'],
+    ];
+    mapTable.innerHTML = groups.map(row => `
+      <tr>
+        ${row.map(ch => `<td><div style='font-weight:700'>${ch}</div><div style='opacity:.7'>${map[ch]}</div></td>`).join('')}
+      </tr>
+    `).join('');
+  }
+
+  function render(){
+    const map = methodSel.value === 'pythagorean' ? PYTHAGOREAN_MAP : CHALDEAN_MAP;
+    const res = compute(nameInput.value, map);
+
+    cleanedEl.textContent = res.cleaned || '—';
+    totalEl.textContent = res.total;
+    finalEl.textContent = res.final;
+
+    lettersWrap.innerHTML = res.letters.length
+      ? res.letters.map((ch,i)=>`<span class="chip"><b>${ch}</b> = ${res.values[i]}</span>`).join('')
+      : '<span class="muted small">अंग्रेज़ी अक्षरों में नाम लिखें</span>';
+
+    if(res.steps.length>1){
+      reductionEl.style.display='block';
+      reductionEl.innerHTML = 'Reduction: ' + res.steps.map((s,i)=> (i? ' → ':'') + `<b>${s}</b>`).join('');
+    } else {
+      reductionEl.style.display='none';
+    }
+
+    mapTitle.textContent = methodSel.value === 'pythagorean' ? 'Pythagorean' : 'Chaldean';
+    buildMapTable(map);
+  }
+
+  copyMapBtn.addEventListener('click', ()=>{
+    const map = methodSel.value === 'pythagorean' ? PYTHAGOREAN_MAP : CHALDEAN_MAP;
+    navigator.clipboard.writeText(JSON.stringify(map, null, 2));
+    copyMapBtn.textContent = 'Copied!';
+    setTimeout(()=> copyMapBtn.textContent='Copy mapping JSON', 1200);
+  });
+
+  nameInput.addEventListener('input', render);
+  methodSel.addEventListener('change', render);
+
+  // init
+  render();
+</script>
+</body>
+</html>
