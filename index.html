@@ -91,7 +91,7 @@
 <body>
   <div class="container">
     <h1>🔢 Numerology Talk</h1>
-    <p class="lead">नाम (spelling) के आधार पर <b>toṭak अंक</b> निकालें. Default: <b>Pythagorean</b>. (Chaldean भी चुन सकते हैं)</p>
+    <p class="lead">नाम (spelling) के आधार पर <bनामांक अंक</b> निकालें. Default: <b>Chaldean</b>. (Chaldean )</p>
 
     <div class="grid">
       <div>
@@ -112,6 +112,12 @@
         <span class="pill">Total: <span id="total" style="margin-left:6px;font-weight:800">0</span></span>
         <span class="pill">Final: <span id="final" class="final" style="margin-left:6px">0</span></span>
       </div>
+       <script>
+  document.getElementById("name").addEventListener("input", function() {
+    this.value = this.value.toLowerCase();
+  });
+</script>
+
       <h2 style="text-align:center;">KASTURI DIVINE</h2>
 <div style="display:flex; flex-wrap:wrap; gap:30px; justify-content:center;">
   <figure style="text-align:center;">
