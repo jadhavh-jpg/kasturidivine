@@ -5,7 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Numerology Talk — Name Number Calculator</title>
   <meta name="description" content="Calculate your name's numerology (Pythagorean or Chaldean). See letter values, totals and single-digit reduction (with master numbers 11/22/33 preserved)." />
-  <style>
+  <style/* === KV add-ons (WhatsApp + Contact + Quote) === */
+.fab-whatsapp{
+  position: fixed; right: 18px; bottom: 18px;
+  width: 56px; height: 56px; border-radius: 50%;
+  display: grid; place-items: center; text-decoration: none;
+  background:#25D366; color:#fff; font-weight:700; font-size:22px;
+  box-shadow: 0 10px 18px rgba(0,0,0,.18);
+  transition: transform .15s ease;
+  z-index: 9999;
+}
+.fab-whatsapp:hover{ transform: scale(1.06); }
+
+.kv-card{ background:#fff; border-radius:12px; padding:18px; 
+  box-shadow: 0 6px 18px rgba(0,0,0,.08); margin: 22px auto; max-width: 860px; }
+.kv-title{ margin:0 0 10px; font-size:22px; }
+
+.kv-grid{ display:grid; gap:14px; grid-template-columns: 1fr 1fr; }
+@media (max-width:700px){ .kv-grid{ grid-template-columns: 1fr; } }
+
+.kv-input, .kv-textarea{
+  width:100%; padding:12px 14px; border:1px solid #e2e8f0; border-radius:10px;
+  font-size:16px; outline:none; transition: border-color .15s ease, box-shadow .15s ease;
+  background:#fff;
+}
+.kv-input:focus, .kv-textarea:focus{
+  border-color:#94a3b8; box-shadow:0 0 0 4px rgba(148,163,184,.2);
+}
+.kv-textarea{ min-height:120px; resize:vertical; }
+.kv-btn{
+  appearance:none; border:0; padding:12px 18px; border-radius:10px; cursor:pointer;
+  background: var(--primary, #4466ee); color:#fff; font-weight:600; font-size:16px;
+}
+.kv-note{ font-size:13px; color:#64748b; }
+
+.kv-quote{
+  display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:12px;
+  background:linear-gradient(135deg,#fef9c3,#e0f2fe);
+  border:1px solid #fee08b;
+}
+.kv-quote b{ font-size:18px; }
+.kv-quote small{ color:#475569; }
+.kv-quote-btn{ margin-left:auto; border:0; background:#0ea5e9; color:#fff; 
+  padding:8px 12px; border-radius:9px; cursor:pointer; }
+
     :root{
       --bg: #f8fafc;
       --card: #ffffff;
@@ -84,6 +127,54 @@
     <figcaption style="margin-top:8px;">Dr. SANTOSHH JAKHAR JI</figcaption>
   </figure>
 </div>
+<!-- === Daily Quote Banner === -->
+<div class="kv-card">
+  <div class="kv-quote">
+    <span style="font-size:22px;">🧠</span>
+    <div>
+      <b>Daily Numerology Thought</b><br>
+      <small id="kv-quote-text">Numbers are the language of the universe.</small>
+    </div>
+    <button class="kv-quote-btn" id="kv-quote-next">New quote</button>
+  </div>
+</div>
+
+<!-- === Contact Form === -->
+<div class="kv-card" id="contact">
+  <h3 class="kv-title">Contact Us</h3>
+  <!-- Option A: Formspree (recommended). Replace the action URL with your Formspree endpoint -->
+  <form id="kv-form" action="https://formspree.io/f/your-endpoint" method="POST">
+    <div class="kv-grid">
+      <input class="kv-input" type="text" name="name" placeholder="Your Name" required>
+      <input class="kv-input" type="email" name="email" placeholder="Email" required>
+    </div>
+    <div style="margin-top:12px;">
+      <input class="kv-input" type="tel" name="phone" placeholder="Phone (optional)">
+    </div>
+    <div style="margin-top:12px;">
+      <textarea class="kv-textarea" name="message" placeholder="Your message..." required></textarea>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; margin-top:14px;">
+      <button class="kv-btn" type="submit">Send Message</button>
+      <span class="kv-note">Alternatively, message us on WhatsApp 👉</span>
+      <a class="kv-btn" style="background:#25D366;" 
+         href="https://wa.me/917581077757?text=Namaste%2C%20Numerology%20inquiry" target="_blank" rel="noopener">
+         WhatsApp
+      </a>
+    </div>
+  </form>
+
+  <!-- Option B: Agar Formspree use nahi karna, to mailto link:
+  <p class="kv-note" style="margin-top:10px;">
+    Or email us at <a href="mailto:youremail@example.com?subject=Numerology%20Inquiry">youremail@example.com</a>
+  </p>
+  -->
+</div>
+
+<!-- === Floating WhatsApp FAB === -->
+<a class="fab-whatsapp" 
+   href="https://wa.me/91 9354370946?text=Namaste%2C%20Numerology%20inquiry" 
+   target="_blank" rel="noopener" aria-label="Chat on WhatsApp">✆</a>
 
       <div id="letters" class="letters"></div>
 
