@@ -96,7 +96,16 @@
     <div class="grid">
       <div>
         <label for="name">नाम / Name</label>
-        <input id="name" placeholder="जैसे:  Hari, Solvix" value="type your name" />
+        <input id="name"
+  placeholder="जैसे: Hari, Solvix"
+  inputmode="latin"
+  autocomplete="off"
+  autocorrect="off"
+  autocapitalize="characters"
+  spellcheck="false"
+  lang="en"
+  style="text-transform:uppercase; width:100%;" />
+
       </div>
       <div>
        <select id="method" disabled>
@@ -224,64 +233,78 @@
   </div>
 
 <script>
-  const PYTHAGOREAN_MAP = {
-    A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,
-    J:1,K:2,L:3,M:4,N:5,O:6,P:7,Q:8,R:9,
-    S:1,T:2,U:3,V:4,W:5,X:6,Y:7,Z:8
-  };
-  const CHALDEAN_MAP = {
-   <script>
+  // ---- MAPS ----
   const CHALDEAN_MAP = {
     A:1, B:2, C:3, D:4, E:5, F:8, G:3, H:5, I:1,
     J:1, K:2, L:3, M:4, N:5, O:7, P:8, Q:1, R:2,
     S:3, T:4, U:6, V:6, W:6, X:5, Y:1, Z:7
   };
 
+  // ---- STRONG CLEANING (mobile-safe) ----
   function cleanInput(str) {
-    return str
-      .toUpperCase()
+    const aliasU = /[ÜÚÙÛŪŬŰŮŨŲǓǙǛǗƯỤỦỨỪỮỰµ]/g; // U lookalikes + micro sign
+    const aliasA = /[ÁÀÂÃÄĀĂĄ]/g, aliasE=/[ÉÈÊËĒĔĖĘĚ]/g, aliasI=/[ÍÌÎÏĪĬĮİ]/g;
+    const aliasO = /[ÓÒÔÕÖŌŎŐƠỌỎỐỒỖỘỔỚỜỞỠỢ]/g, aliasY=/[ÝỲỴỶỸŸ]/g;
+    const aliasC=/[ÇĆĈĊČ]/g, aliasN=/[ÑŃŅŇ]/g, aliasS=/[ŚŜŞŠ]/g, aliasZ=/[ŹŻŽ]/g;
+
+    return str.toUpperCase()
       .normalize('NFKD')
       .replace(/[\u0300-\u036f]/g, '')       // diacritics
-      .replace(/[\u200B-\u200D\uFEFF]/g, '') // zero‑width
-      .replace(/[^A-Z]/g, '');               // only A-Z
+      .replace(/[\u200B-\u200D\uFEFF]/g, '') // zero‑widths
+      .replace(aliasU, 'U').replace(aliasA, 'A').replace(aliasE, 'E')
+      .replace(aliasI, 'I').replace(aliasO, 'O').replace(aliasY, 'Y')
+      .replace(aliasC, 'C').replace(aliasN, 'N').replace(aliasS, 'S')
+      .replace(aliasZ, 'Z')
+      .replace(/[^A-Z]/g, '');               // keep only A–Z
   }
 
+  // ---- Digital root ----
   function digitalRoot(n) {
-    while (n > 9) n = String(n).split('').reduce((sum, d) => sum + +d, 0);
+    while (n > 9) n = String(n).split('').reduce((s,d)=>s + (+d), 0);
     return n;
   }
 
+  // ---- Optional DEBUG (dekhna ho to chalao) ----
+  function debugChars(str) {
+    const out = Array.from(str)
+      .map(ch => `${ch}(U+${ch.codePointAt(0).toString(16).toUpperCase()})`)
+      .join(' • ');
+    // Debug output ko 'letters' me dikha dete hain; kaam ho jaye to comment kar dena
+    // document.getElementById('letters').textContent = out;
+    // console.log(out);
+  }
+
+  // ---- Main calc ----
   function calcAndRender(name, map) {
+    debugChars(name);                      // (debug – optional)
     const cleaned = cleanInput(name);
     let total = 0;
     const parts = [];
 
     for (const ch of cleaned) {
-      const value = map[ch] || 0;
-      parts.push(`${ch}=${value}`);
+      const value = map[ch] ?? 0;
+      parts.push(`${ch} = ${value}`);
       total += value;
     }
 
-    // Output to your HTML elements (as per your current IDs)
-    document.getElementById('cleaned').textContent = cleaned;
-    document.getElementById('letters').textContent = parts.join('  +  ');
-    document.getElementById('total').textContent = total;
+    document.getElementById('cleaned').textContent = cleaned || '—';
+    document.getElementById('letters').textContent = parts.join('  +  ') || '—';
+    document.getElementById('total').textContent = String(total);
     document.getElementById('final').textContent = digitalRoot(total);
   }
 
-  // Connect with input box
+  // ---- Wire up input (mobile friendly) ----
   const nameInput = document.getElementById('name');
-  nameInput.addEventListener('input', () => {
-    calcAndRender(nameInput.value, CHALDEAN_MAP);
-  });
+  ['input','change','keyup','paste'].forEach(evt =>
+    nameInput.addEventListener(evt, () => calcAndRender(nameInput.value, CHALDEAN_MAP))
+  );
 
-  // On page load, if default value exists
+  // First paint
   window.addEventListener('DOMContentLoaded', () => {
-    if (nameInput.value) {
-      calcAndRender(nameInput.value, CHALDEAN_MAP);
-    }
+    calcAndRender(nameInput.value || '', CHALDEAN_MAP);
   });
 </script>
+
 
   const copyMapBtn = document.getElementById('copyMap');
 
