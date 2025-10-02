@@ -230,20 +230,59 @@
     S:1,T:2,U:3,V:4,W:5,X:6,Y:7,Z:8
   };
   const CHALDEAN_MAP = {
-    A:1,B:2,C:3,D:4,E:5,F:8,G:3,H:5,I:1,
-    J:1,K:2,L:3,M:4,N:5,O:7,P:8,Q:1,R:2,
-    S:3,T:4,U:6,V:6,W:6,X:5,Y:1,Z:7
+   <script>
+  const CHALDEAN_MAP = {
+    A:1, B:2, C:3, D:4, E:5, F:8, G:3, H:5, I:1,
+    J:1, K:2, L:3, M:4, N:5, O:7, P:8, Q:1, R:2,
+    S:3, T:4, U:6, V:6, W:6, X:5, Y:1, Z:7
   };
 
+  function cleanInput(str) {
+    return str
+      .toUpperCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')       // diacritics
+      .replace(/[\u200B-\u200D\uFEFF]/g, '') // zero‑width
+      .replace(/[^A-Z]/g, '');               // only A-Z
+  }
+
+  function digitalRoot(n) {
+    while (n > 9) n = String(n).split('').reduce((sum, d) => sum + +d, 0);
+    return n;
+  }
+
+  function calcAndRender(name, map) {
+    const cleaned = cleanInput(name);
+    let total = 0;
+    const parts = [];
+
+    for (const ch of cleaned) {
+      const value = map[ch] || 0;
+      parts.push(`${ch}=${value}`);
+      total += value;
+    }
+
+    // Output to your HTML elements (as per your current IDs)
+    document.getElementById('cleaned').textContent = cleaned;
+    document.getElementById('letters').textContent = parts.join('  +  ');
+    document.getElementById('total').textContent = total;
+    document.getElementById('final').textContent = digitalRoot(total);
+  }
+
+  // Connect with input box
   const nameInput = document.getElementById('name');
-  const methodSel = document.getElementById('method');
-  const cleanedEl = document.getElementById('cleaned');
-  const totalEl = document.getElementById('total');
-  const finalEl = document.getElementById('final');
-  const lettersWrap = document.getElementById('letters');
-  const reductionEl = document.getElementById('reduction');
-  const mapTitle = document.getElementById('mapTitle');
-  const mapTable = document.getElementById('mapTable');
+  nameInput.addEventListener('input', () => {
+    calcAndRender(nameInput.value, CHALDEAN_MAP);
+  });
+
+  // On page load, if default value exists
+  window.addEventListener('DOMContentLoaded', () => {
+    if (nameInput.value) {
+      calcAndRender(nameInput.value, CHALDEAN_MAP);
+    }
+  });
+</script>
+
   const copyMapBtn = document.getElementById('copyMap');
 
   function cleanName(raw){
